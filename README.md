@@ -4,8 +4,8 @@
 
 <div align="center">
 
-[![Telegram][https://img.shields.io/badge/Channel-blue?style=for-the-badge&logo=telegram&label=Telegram][t.me/channelhehejuice]
-[![Chat][https://img.shields.io/badge/Chat-blue?style=for-the-badge&logo=telegram&label=Telegram][t.me/SecHehe]
+[![Telegram](https://img.shields.io/badge/Channel-blue?style=for-the-badge&logo=telegram&label=Telegram)](t.me/channelhehejuice)
+[![Chat](https://img.shields.io/badge/Chat-blue?style=for-the-badge&logo=telegram&label=Telegram)](t.me/SecHehe)
 </div>
 
 ### 🗺 Project Overview 
