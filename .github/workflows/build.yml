@@ -3,6 +3,10 @@ name: Build LSPosed Module
 on:
   push:
     branches: [ "main" ]
+    # Tells GitHub to completely ignore edits to markdown files
+    paths-ignore:
+      - 'README.md'
+      - '**.md'
   workflow_dispatch:
 
 jobs:
@@ -31,7 +35,7 @@ jobs:
     - name: Compile Debug APK
       run: gradle assembleDebug
 
-    # Replaces your old upload block to create the 'debug' folder and push it back
+    # Creates the 'debug' folder, copies the APK, and skips triggering another workflow loop
     - name: Copy APK to Debug Folder and Push
       run: |
         mkdir -p debug
@@ -39,10 +43,10 @@ jobs:
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git add debug/OneUISpoof-debug.apk
-        git commit -m "Automated build: Update debug artifact" || echo "No changes to commit"
-        # Added --force here to bypass the history rejection
+        # [skip ci] prevents the runner's own automated commit from starting a new build
+        git commit -m "Automated build: Update debug artifact [skip ci]" || echo "No changes to commit"
+        # Force push to safely bypass remote history conflicts
         git push origin main --force 
-
 
     - name: Upload Finished Artifact
       uses: actions/upload-artifact@v4

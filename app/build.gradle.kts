@@ -5,13 +5,13 @@ plugins {
 
 android {
     namespace = "com.HeheJuice.OneUISpoof"
-    compileSdk = 34
-    compileSdkVersion(34) // Added this to satisfy the older plugin requirement
+    compileSdk = 36
+    compileSdkVersion(36) // Added this to satisfy the older plugin requirement
 
     defaultConfig {
         applicationId = "com.HeheJuice.OneUISpoof"
-        minSdk = 26
-        targetSdk = 34
+        minSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
     }
