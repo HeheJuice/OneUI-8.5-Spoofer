@@ -4,7 +4,7 @@
 
 <div align="center">
 
-[![Telegram](https://img.shields.io/badge/Telegram-Channel-26A5E4?logo=Telegram&logoColor=FFffff?style=flat-square)](t.me/channelhehejuice)
+[![Telegram](https://img.shields.io/badge/Telegram-Channel-26A5E4?logo=Telegram&logoColor=FFffff?style=flat-square)](https://t.me/channelhehejuice)
 [![Chat](https://img.shields.io/badge/Telegram-Chat-26A5E4?logo=Telegram&logoColor=FFffff?style=flat-square)](t.me/sechehe)
 ![LSPosed](https://img.shields.io/badge/Powered_by-LSPosed-F48FB1?style=flat-square&logo=android)
 [![MinSDK](https://img.shields.io/badge/Min_SDK-35-brightgreen?style=flat-square&logo=android)](https://developer.android.com/about/versions)
