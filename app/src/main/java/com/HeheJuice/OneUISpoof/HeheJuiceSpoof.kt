@@ -10,6 +10,13 @@ import java.io.FileInputStream
 
 class HeheJuiceSpoof : IXposedHookLoadPackage {
 
+    // ---- SUGGESTED APP LIST CONSTANTS ----
+    // You can add or remove any package names here to change the module's scope
+    private val suggestedApps = setOf(
+        "com.sec.android.gallery3d",          // Samsung Gallery
+        "com.android.systemui",               // System UI (Crucial for blur effects & widgets)
+    )
+
     private val customXmlContent = """
         <?xml version="1.0" encoding="utf-8"?>
         <permissions>
@@ -39,13 +46,16 @@ class HeheJuiceSpoof : IXposedHookLoadPackage {
     """.trimIndent()
 
     override fun handleLoadPackage(lpparam: LoadPackageParam) {
-        if (lpparam.packageName == null) return
+        val packageName = lpparam.packageName ?: return
+
+        // Scope Filter: Instantly abort if the app isn't explicitly targeted
+        if (!suggestedApps.contains(packageName)) return
 
         val targetPath = "/system/etc/permissions/com.samsung.android.oneui.version.xml"
         val xmlBytes = customXmlContent.toByteArray(Charsets.UTF_8)
 
         // =========================================================
-        // LAYER 1: SYSTEM PROPERTIES & INT OVERRIDES (All Apps)
+        // LAYER 1: SYSTEM PROPERTIES & INT OVERRIDES (Scoped Apps)
         // =========================================================
         try {
             val systemPropertiesClass = XposedHelpers.findClass("android.os.SystemProperties", lpparam.classLoader)
@@ -116,10 +126,8 @@ class HeheJuiceSpoof : IXposedHookLoadPackage {
         } catch (t: Throwable) {}
 
         // =========================================================
-        // LAYER 2: UNIVERSAL VIRTUAL FILE SIMULATION (All Apps)
+        // LAYER 2: UNIVERSAL VIRTUAL FILE SIMULATION (Scoped Apps)
         // =========================================================
-        
-        // 2A. Mock existence globally
         try {
             XposedHelpers.findAndHookMethod(File::class.java, "exists", object : XC_MethodHook() {
                 override fun beforeHookedMethod(param: MethodHookParam) {
@@ -131,7 +139,6 @@ class HeheJuiceSpoof : IXposedHookLoadPackage {
             })
         } catch (t: Throwable) {}
 
-        // 2B. Mock file length metrics
         try {
             XposedHelpers.findAndHookMethod(File::class.java, "length", object : XC_MethodHook() {
                 override fun beforeHookedMethod(param: MethodHookParam) {
@@ -143,7 +150,6 @@ class HeheJuiceSpoof : IXposedHookLoadPackage {
             })
         } catch (t: Throwable) {}
 
-        // 2C. Intercept FileInputStream constructors safely via /dev/null redirect
         try {
             val fileStreamHook = object : XC_MethodHook() {
                 override fun beforeHookedMethod(param: MethodHookParam) {
@@ -165,7 +171,6 @@ class HeheJuiceSpoof : IXposedHookLoadPackage {
             XposedHelpers.findAndHookConstructor(FileInputStream::class.java, String::class.java, fileStreamHook)
         } catch (t: Throwable) {}
 
-        // 2D. Handle byte-array parsing transactions directly
         try {
             XposedHelpers.findAndHookMethod(FileInputStream::class.java, "read", object : XC_MethodHook() {
                 override fun beforeHookedMethod(param: MethodHookParam) {
