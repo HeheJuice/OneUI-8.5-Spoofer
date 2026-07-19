@@ -23,5 +23,5 @@
      
 ### 📝 Other Features 
 - Unlock OneUI 8.5 App Layout [OneUI 8.5 Apps Required]
-- Unlock OneUI 8.5 Blur UI [Required a Live-Blur Support Device]
+- Unlock OneUI 8.5 Blur UI [Testing] [Required a Live-Blur Support Device]
  
