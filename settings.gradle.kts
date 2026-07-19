@@ -9,6 +9,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // Adds the required legacy repository mirror for Xposed API artifacts
+        maven { url = java.net.URI("https://api.bintray.com/maven/rovo89/xposed/api") }
     }
 }
 
