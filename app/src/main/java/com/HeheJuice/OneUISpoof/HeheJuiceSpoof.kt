@@ -1,37 +1,54 @@
 package com.HeheJuice.OneUISpoof
 
-import android.os.Build
 import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.XposedHelpers
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
+import de.robv.android.xposed.XC_MethodHook
 
 class HeheJuiceSpoof : IXposedHookLoadPackage {
+
     override fun handleLoadPackage(lpparam: LoadPackageParam) {
-        // Only spoof for official Samsung package targets to prevent system instability
-        if (!lpparam.packageName.startsWith("com.samsung.")) return
+        // Prevent running on null packages or system-wide processes that don't need it
+        if (lpparam.packageName == null) return
 
         try {
-            // 1. Hook the standard hidden One UI Version property field
-            XposedHelpers.setStaticIntField(Build.VERSION::class.java, "SEM_PLATFORM_INT", 170500) 
-            
-            // 2. Hook system property checks if the app looks up properties directly
-            // (One UI 8.5 corresponds roughly to SEM Platform value 170500 or version property 80500)
             XposedHelpers.findAndHookMethod(
-                "android.os.SystemProperties", 
-                lpparam.classLoader, 
-                "get", 
-                String::class.java, 
-                object : de.robv.android.xposed.XC_MethodHook() {
+                "android.app.ApplicationPackageManager",
+                lpparam.classLoader,
+                "hasSystemFeature",
+                String::class.java,
+                object : XC_MethodHook() {
                     override fun beforeHookedMethod(param: MethodHookParam) {
-                        val key = param.args[0] as String
-                        if (key == "ro.build.version.oneui" || key == "ro.build.version.sep") {
-                            param.result = "80500" // Identifies as One UI 8.5
+                        val featureName = param.args[0] as? String ?: return
+                        
+                        // Handle all variations of the feature string cleanly
+                        if (featureName.startsWith("com.samsung.android.oneui.version")) {
+                            param.result = true
                         }
                     }
                 }
             )
-        } catch (e: Throwable) {
-            // Gracefully ignore if a specific app doesn't contain the platform field
+        } catch (t: Throwable) {
+            // Suppress framework initialization errors
         }
+
+        // Alternative target used by secondary subsystems and permissions checks
+        try {
+            XposedHelpers.findAndHookMethod(
+                "android.app.ApplicationPackageManager",
+                lpparam.classLoader,
+                "hasSystemFeature",
+                String::class.java,
+                Int::class.java,
+                object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        val featureName = param.args[0] as? String ?: return
+                        if (featureName.startsWith("com.samsung.android.oneui.version")) {
+                            param.result = true
+                        }
+                    }
+                }
+            )
+        } catch (t: Throwable) {}
     }
 }
