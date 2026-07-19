@@ -4,7 +4,7 @@
     <application
         android:allowBackup="false"
         package="com.HeheJuice.OneUISpoof"
-        android:icon="@mipmap/ic_hehe"
+        android:icon="@drawable/ic_hehe"
         android:label="OneUI 8.5 Prop Spoofer">
         
         <meta-data
