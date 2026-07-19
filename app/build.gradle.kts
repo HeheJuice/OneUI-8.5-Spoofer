@@ -4,16 +4,15 @@ plugins {
 }
 
 android {
-    namespace = "com.example.mymodule"
-    compileSdk = 34
-
+    // ... other settings ...
     defaultConfig {
-        applicationId = "com.example.mymodule"
-        minSdk = 26
-        targetSdk = 34
+        applicationId = "com.HeheJuice.OneUISpoof"
+        minSdk = 34
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
     }
+}
 
     buildTypes {
         release {
