@@ -4,8 +4,8 @@
 
 <div align="center">
 
-[![Telegram](https://img.shields.io/badge/Telegram-Release_Channel-5C2542?logo=Telegram&logoColor=FFE6EA&style=for-the-badge)](t.me/channelhehejuice)
-[![Chat](https://img.shields.io/badge/Telegram-Chat-5C2542?logo=Telegram&logoColor=FFE6EA&style=for-the-badge)](t.me/sechehe)
+[![Telegram](https://img.shields.io/badge/Telegram-Release_Channel-26A5E4?logo=Telegram&logoColor=FFE6EA&style=for-the-badge)](t.me/channelhehejuice)
+[![Chat](https://img.shields.io/badge/Telegram-Chat-26A5E4?logo=Telegram&logoColor=FFE6EA&style=for-the-badge)](t.me/sechehe)
 
 </div>
 
