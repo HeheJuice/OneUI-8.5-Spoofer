@@ -3,7 +3,7 @@ name: Build LSPosed Module
 on:
   push:
     branches: [ "main" ]
-  workflow_dispatch: # Allows manual trigger
+  workflow_dispatch:
 
 jobs:
   build:
@@ -18,17 +18,12 @@ jobs:
       with:
         distribution: 'zulu'
         java-version: '17'
-        cache: 'gradle'
-
-    - name: Grant Execute Permission for Gradle
-      run: chmod +x gradlew
 
     - name: Compile Debug APK
-      run: ./gradlew assembleDebug
+      run: gradle assembleDebug
 
     - name: Upload Finished APK
       uses: actions/upload-artifact@v4
       with:
         name: lsposed-module-debug
         path: app/build/outputs/apk/debug/app-debug.apk
-        
