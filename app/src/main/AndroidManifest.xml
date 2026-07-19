@@ -20,7 +20,7 @@
         
         <meta-data 
     android:name="xposedscope" 
-    android:value="com.sec.android.gallery3d;com.sec.android.app.myfiles;com.samsung.android.app.interpreter;com.samsung.android.app.routines;com.samsung.android.forest" />
+    android:value="com.sec.android.gallery3d;com.sec.android.app.myfiles;com.samsung.android.app.interpreter;com.samsung.android.app.routines;com.samsung.android.forest;com.sec.android.app.popupcalculator;com.sec.android.app.clockpackage;com.samsung.android.app.sketchbook;com.samsung.android.lool;com.samsung.android.smartsuggestions;com.sec.android.mimage.photoretouching;com.samsung.android.app.reminder;com.samsung.android.app.notes;com.sec.android.daemonapp" />
 
     </application>
 </manifest>
