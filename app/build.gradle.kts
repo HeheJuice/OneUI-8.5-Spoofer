@@ -4,15 +4,16 @@ plugins {
 }
 
 android {
-    // ... other settings ...
+    namespace = "com.HeheJuice.OneUISpoof"
+    compileSdk = 34
+
     defaultConfig {
         applicationId = "com.HeheJuice.OneUISpoof"
-        minSdk = 34
-        targetSdk = 36
+        minSdk = 26
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
     }
-
 
     buildTypes {
         release {
@@ -23,18 +24,18 @@ android {
             )
         }
     }
-    
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    
+
     kotlinOptions {
         jvmTarget = "17"
     }
 }
 
 dependencies {
-    // LSPosed API - compileOnly ensures it's not packed inside your APK
     compileOnly("de.robv.android.xposed:api:82")
 }
+
