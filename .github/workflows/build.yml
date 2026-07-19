@@ -3,7 +3,6 @@ name: Build LSPosed Module
 on:
   push:
     branches: [ "main" ]
-    # Tells GitHub to completely ignore edits to markdown files
     paths-ignore:
       - 'README.md'
       - '**.md'
@@ -13,7 +12,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    # Crucial: Allows the runner to push the APK back to your repository
     permissions:
       contents: write 
 
@@ -32,10 +30,18 @@ jobs:
       with:
         gradle-version: 8.5
 
+    # Safely injects your persistent identity key into the compiler tree
+    - name: Prepare Keystore
+      run: |
+        echo "${{ secrets.SIGNING_KEY }}" | base64 --decode > app/debug.keystore
+
     - name: Compile Debug APK
       run: gradle assembleDebug
+      env:
+        RELEASE_SIGNING_PASSWORD: android
+        RELEASE_SIGNING_KEY_ALIAS: androiddebugkey
+        RELEASE_SIGNING_KEY_PASSWORD: android
 
-    # Creates the 'debug' folder, copies the APK, and skips triggering another workflow loop
     - name: Copy APK to Debug Folder and Push
       run: |
         mkdir -p debug
@@ -43,9 +49,7 @@ jobs:
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git add debug/OneUISpoof-debug.apk
-        # [skip ci] prevents the runner's own automated commit from starting a new build
         git commit -m "Automated build: Update debug artifact [skip ci]" || echo "No changes to commit"
-        # Force push to safely bypass remote history conflicts
         git push origin main --force 
 
     - name: Upload Finished Artifact
