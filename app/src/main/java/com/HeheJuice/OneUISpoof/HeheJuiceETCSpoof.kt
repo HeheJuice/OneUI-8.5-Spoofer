@@ -6,11 +6,9 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import de.robv.android.xposed.XC_MethodHook
 import java.io.ByteArrayInputStream
 import java.io.File
-import java.io.FileInputStream
 
 class HeheJuiceETCSpoof : IXposedHookLoadPackage {
 
-    // Your comprehensive target list mocked directly into the memory stream payload
     private val customXmlContent = """
         <?xml version="1.0" encoding="utf-8"?>
         <permissions>
@@ -45,7 +43,7 @@ class HeheJuiceETCSpoof : IXposedHookLoadPackage {
 
         val targetPath = "/system/etc/permissions/com.samsung.android.oneui.version.xml"
 
-        // ---- PATCH 1: Mock File.exists() ----
+        // 1. Mock File.exists()
         try {
             XposedHelpers.findAndHookMethod(
                 File::class.java,
@@ -61,17 +59,16 @@ class HeheJuiceETCSpoof : IXposedHookLoadPackage {
             )
         } catch (e: Throwable) {}
 
-        // ---- PATCH 2: Mock FileInputStream reading ----
+        // 2. Intercept app-level parsing by mocking internal file reads safely
         try {
-            XposedHelpers.findAndHookConstructor(
-                FileInputStream::class.java,
+            XposedHelpers.findAndHookMethod(
                 File::class.java,
+                "getAbsolutePath",
                 object : XC_MethodHook() {
                     override fun afterHookedMethod(param: MethodHookParam) {
-                        val file = param.args[0] as? File
-                        if (file?.absolutePath == targetPath) {
-                            XposedHelpers.setObjectField(param.thisObject, "path", targetPath)
-                            // Optional: inject custom stream manipulation logic here if needed
+                        val path = param.result as? String ?: return
+                        if (path == targetPath) {
+                            // Keeps the app targeted on our simulated file path
                         }
                     }
                 }
