@@ -28,6 +28,7 @@
 - Unlock OneUI 8.5 Blur UI 
      - Required OneUI 8.5 App Installed
      - Required the device itself supports Live-Blur
+     - Might not works on some version of apps
 ### ℹ️ How to use?
 - Install the .APK and activate in LSPosed
 
