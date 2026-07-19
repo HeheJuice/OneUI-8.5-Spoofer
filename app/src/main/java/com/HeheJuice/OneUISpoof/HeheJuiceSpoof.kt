@@ -18,22 +18,20 @@ class HeheJuiceSpoof : IXposedHookLoadPackage {
         // LAYER 1: UNIVERSAL HOOKS (For ALL Apps)
         // =========================================================
         
-        // 1A. Spoof SystemProperties for ro.build.version.oneui and sep
+        // 1A. Spoof Standard SystemProperties (Strings & Integers)
         try {
             val systemPropertiesClass = XposedHelpers.findClass("android.os.SystemProperties", lpparam.classLoader)
 
-            // Intercept String requests
             val propHookString = object : XC_MethodHook() {
                 override fun afterHookedMethod(param: MethodHookParam) {
                     val key = param.args[0] as? String ?: return
-                    if (key == "ro.build.version.oneui") param.result = "80500" // OneUI 8.5
+                    if (key == "ro.build.version.oneui") param.result = "80500" 
                     if (key == "ro.build.version.sep") param.result = "160500"
                 }
             }
             XposedHelpers.findAndHookMethod(systemPropertiesClass, "get", String::class.java, propHookString)
             XposedHelpers.findAndHookMethod(systemPropertiesClass, "get", String::class.java, String::class.java, propHookString)
 
-            // Intercept Integer requests (Crucial for Samsung stock apps)
             val propHookInt = object : XC_MethodHook() {
                 override fun afterHookedMethod(param: MethodHookParam) {
                     val key = param.args[0] as? String ?: return
@@ -58,6 +56,38 @@ class HeheJuiceSpoof : IXposedHookLoadPackage {
             XposedHelpers.findAndHookMethod("android.app.ApplicationPackageManager", lpparam.classLoader, "hasSystemFeature", String::class.java, Int::class.javaPrimitiveType, featureHook)
         } catch (t: Throwable) {}
 
+        // 1C. Spoof Samsung's Hidden Static Build Variables
+        try {
+            val buildVersionClass = XposedHelpers.findClass("android.os.Build\$VERSION", lpparam.classLoader)
+            // 160500 represents the SEP version matching OneUI 8.5
+            XposedHelpers.setStaticIntField(buildVersionClass, "SEM_PLATFORM_INT", 160500)
+            XposedHelpers.setStaticIntField(buildVersionClass, "SEM_INT", 160500)
+        } catch (t: Throwable) {}
+
+        // 1D. Spoof Samsung's Proprietary SemSystemProperties Wrapper
+        try {
+            val semSystemPropertiesClass = XposedHelpers.findClass("android.os.SemSystemProperties", lpparam.classLoader)
+            
+            val semPropHookString = object : XC_MethodHook() {
+                override fun afterHookedMethod(param: MethodHookParam) {
+                    val key = param.args[0] as? String ?: return
+                    if (key == "ro.build.version.oneui") param.result = "80500"
+                    if (key == "ro.build.version.sep") param.result = "160500"
+                }
+            }
+            XposedHelpers.findAndHookMethod(semSystemPropertiesClass, "get", String::class.java, semPropHookString)
+            XposedHelpers.findAndHookMethod(semSystemPropertiesClass, "get", String::class.java, String::class.java, semPropHookString)
+
+            val semPropHookInt = object : XC_MethodHook() {
+                override fun afterHookedMethod(param: MethodHookParam) {
+                    val key = param.args[0] as? String ?: return
+                    if (key == "ro.build.version.oneui") param.result = 80500
+                    if (key == "ro.build.version.sep") param.result = 160500
+                }
+            }
+            XposedHelpers.findAndHookMethod(semSystemPropertiesClass, "getInt", String::class.java, Int::class.javaPrimitiveType, semPropHookInt)
+        } catch (t: Throwable) {}
+
         // =========================================================
         // LAYER 2: NON-SAMSUNG ONLY HOOKS (File Mocking)
         // =========================================================
@@ -66,7 +96,6 @@ class HeheJuiceSpoof : IXposedHookLoadPackage {
             val targetPath = "/system/etc/permissions/com.samsung.android.oneui.version.xml"
             
             try {
-                // Safely mock the XML file's existence for third-party apps
                 XposedHelpers.findAndHookMethod(
                     File::class.java,
                     "exists",
