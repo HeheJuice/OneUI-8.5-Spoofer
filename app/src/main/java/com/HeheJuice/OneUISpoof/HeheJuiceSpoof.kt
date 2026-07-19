@@ -4,9 +4,39 @@ import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.XposedHelpers
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import de.robv.android.xposed.XC_MethodHook
+import java.io.ByteArrayInputStream
 import java.io.File
+import java.io.FileInputStream
 
 class HeheJuiceSpoof : IXposedHookLoadPackage {
+
+    private val customXmlContent = """
+        <?xml version="1.0" encoding="utf-8"?>
+        <permissions>
+         <feature name="com.samsung.android.oneui.version.10000" />
+         <feature name="com.samsung.android.oneui.version.10100" />
+         <feature name="com.samsung.android.oneui.version.10200" />
+         <feature name="com.samsung.android.oneui.version.10500" />
+         <feature name="com.samsung.android.oneui.version.20000" />
+         <feature name="com.samsung.android.oneui.version.20100" />
+         <feature name="com.samsung.android.oneui.version.20500" />
+         <feature name="com.samsung.android.oneui.version.30000" />
+         <feature name="com.samsung.android.oneui.version.30100" />
+         <feature name="com.samsung.android.oneui.version.30101" />
+         <feature name="com.samsung.android.oneui.version.40000" />
+         <feature name="com.samsung.android.oneui.version.40100" />
+         <feature name="com.samsung.android.oneui.version.40101" />
+         <feature name="com.samsung.android.oneui.version.50000" />
+         <feature name="com.samsung.android.oneui.version.50100" />
+         <feature name="com.samsung.android.oneui.version.50101" />
+         <feature name="com.samsung.android.oneui.version.60000" />
+         <feature name="com.samsung.android.oneui.version.60100" /> 
+         <feature name="com.samsung.android.oneui.version.60101" /> 
+         <feature name="com.samsung.android.oneui.version.70000" />
+         <feature name="com.samsung.android.oneui.version.80000" /> 
+         <feature name="com.samsung.android.oneui.version.80500" /> 
+        </permissions>
+    """.trimIndent()
 
     override fun handleLoadPackage(lpparam: LoadPackageParam) {
         val packageName = lpparam.packageName ?: return
@@ -59,7 +89,6 @@ class HeheJuiceSpoof : IXposedHookLoadPackage {
         // 1C. Spoof Samsung's Hidden Static Build Variables
         try {
             val buildVersionClass = XposedHelpers.findClass("android.os.Build\$VERSION", lpparam.classLoader)
-            // 160500 represents the SEP version matching OneUI 8.5
             XposedHelpers.setStaticIntField(buildVersionClass, "SEM_PLATFORM_INT", 160500)
             XposedHelpers.setStaticIntField(buildVersionClass, "SEM_INT", 160500)
         } catch (t: Throwable) {}
@@ -89,25 +118,101 @@ class HeheJuiceSpoof : IXposedHookLoadPackage {
         } catch (t: Throwable) {}
 
         // =========================================================
-        // LAYER 2: NON-SAMSUNG ONLY HOOKS (File Mocking)
+        // LAYER 2: NON-SAMSUNG ONLY HOOKS (Virtual File Simulation)
         // =========================================================
         
         if (!isSamsungApp) {
             val targetPath = "/system/etc/permissions/com.samsung.android.oneui.version.xml"
+            val xmlBytes = customXmlContent.toByteArray(Charsets.UTF_8)
             
+            // 2A. Mock existence
             try {
-                XposedHelpers.findAndHookMethod(
-                    File::class.java,
-                    "exists",
-                    object : XC_MethodHook() {
-                        override fun beforeHookedMethod(param: MethodHookParam) {
-                            val file = param.thisObject as File
-                            if (file.absolutePath == targetPath) {
-                                param.result = true
+                XposedHelpers.findAndHookMethod(File::class.java, "exists", object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        val file = param.thisObject as File
+                        if (file.absolutePath == targetPath) {
+                            param.result = true
+                        }
+                    }
+                })
+            } catch (t: Throwable) {}
+
+            // 2B. Mock virtual file sizing limits
+            try {
+                XposedHelpers.findAndHookMethod(File::class.java, "length", object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        val file = param.thisObject as File
+                        if (file.absolutePath == targetPath) {
+                            param.result = xmlBytes.size.toLong()
+                        }
+                    }
+                })
+            } catch (t: Throwable) {}
+
+            // 2C. Intercept FileInputStream instantiation and switch target descriptor path
+            try {
+                val fileStreamHook = object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        val arg = param.args[0]
+                        val path = if (arg is File) arg.absolutePath else arg as? String
+                        
+                        if (path == targetPath) {
+                            XposedHelpers.setAdditionalInstanceField(param.thisObject, "isOneUISpoofStream", true)
+                            XposedHelpers.setAdditionalInstanceField(param.thisObject, "spoofStream", ByteArrayInputStream(xmlBytes))
+                            // Point constructor to a universally valid baseline path to prevent FileNotFound crashes
+                            if (arg is File) {
+                                param.args[0] = File("/dev/null")
+                            } else {
+                                param.args[0] = "/dev/null"
                             }
                         }
                     }
-                )
+                }
+                XposedHelpers.findAndHookConstructor(FileInputStream::class.java, File::class.java, fileStreamHook)
+                XposedHelpers.findAndHookConstructor(FileInputStream::class.java, String::class.java, fileStreamHook)
+            } catch (t: Throwable) {}
+
+            // 2D. Inject Custom Bytes down stream reads smoothly
+            try {
+                XposedHelpers.findAndHookMethod(FileInputStream::class.java, "read", object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        if (XposedHelpers.getAdditionalInstanceField(param.thisObject, "isOneUISpoofStream") == true) {
+                            val bis = XposedHelpers.getAdditionalInstanceField(param.thisObject, "spoofStream") as ByteArrayInputStream
+                            param.result = bis.read()
+                        }
+                    }
+                })
+
+                XposedHelpers.findAndHookMethod(FileInputStream::class.java, "read", ByteArray::class.java, object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        if (XposedHelpers.getAdditionalInstanceField(param.thisObject, "isOneUISpoofStream") == true) {
+                            val bis = XposedHelpers.getAdditionalInstanceField(param.thisObject, "spoofStream") as ByteArrayInputStream
+                            val b = param.args[0] as ByteArray
+                            param.result = bis.read(b)
+                        }
+                    }
+                })
+
+                XposedHelpers.findAndHookMethod(FileInputStream::class.java, "read", ByteArray::class.java, Int::class.javaPrimitiveType, Int::class.javaPrimitiveType, object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        if (XposedHelpers.getAdditionalInstanceField(param.thisObject, "isOneUISpoofStream") == true) {
+                            val bis = XposedHelpers.getAdditionalInstanceField(param.thisObject, "spoofStream") as ByteArrayInputStream
+                            val b = param.args[0] as ByteArray
+                            val off = param.args[1] as Int
+                            val len = param.args[2] as Int
+                            param.result = bis.read(b, off, len)
+                        }
+                    }
+                })
+
+                XposedHelpers.findAndHookMethod(FileInputStream::class.java, "available", object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        if (XposedHelpers.getAdditionalInstanceField(param.thisObject, "isOneUISpoofStream") == true) {
+                            val bis = XposedHelpers.getAdditionalInstanceField(param.thisObject, "spoofStream") as ByteArrayInputStream
+                            param.result = bis.available()
+                        }
+                    }
+                })
             } catch (t: Throwable) {}
         }
     }
