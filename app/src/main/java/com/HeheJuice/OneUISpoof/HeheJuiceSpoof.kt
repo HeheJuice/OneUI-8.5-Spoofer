@@ -87,8 +87,8 @@ class HeheJuiceSpoof : IXposedHookLoadPackage {
         // 1C. Spoof Samsung's Hidden Static Build Variables
         try {
             val buildVersionClass = XposedHelpers.findClass("android.os.Build\$VERSION", lpparam.classLoader)
-            XposedHelpers.setStaticIntField(buildVersionClass, "SEM_PLATFORM_INT", 160500)
-            XposedHelpers.setStaticIntField(buildVersionClass, "SEM_INT", 160500)
+            XposedHelpers.setStaticIntField(buildVersionClass, "SEM_PLATFORM_INT", 170500)
+            XposedHelpers.setStaticIntField(buildVersionClass, "SEM_INT", 170500)
         } catch (t: Throwable) {}
 
         // 1D. Spoof Samsung's Proprietary SemSystemProperties Wrapper
