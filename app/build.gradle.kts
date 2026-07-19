@@ -6,6 +6,7 @@ plugins {
 android {
     namespace = "com.HeheJuice.OneUISpoof"
     compileSdk = 34
+    compileSdkVersion(34) // Added this to satisfy the older plugin requirement
 
     defaultConfig {
         applicationId = "com.HeheJuice.OneUISpoof"
@@ -38,4 +39,3 @@ android {
 dependencies {
     compileOnly("de.robv.android.xposed:api:82")
 }
-
