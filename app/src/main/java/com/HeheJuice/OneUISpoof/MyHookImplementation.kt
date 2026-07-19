@@ -1,4 +1,4 @@
-package com.example.mymodule
+package com.HeheJuice.OneUISpoof
 
 import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.XC_MethodHook
