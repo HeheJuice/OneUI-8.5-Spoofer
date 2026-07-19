@@ -30,3 +30,7 @@
 ### ℹ️ How to use?
 - Install the .APK and activate in LSPosed
 - Reboot your device (Recommended)
+
+### 🥰 Credits
+- HeheJuice aka ME ,for making the whole spoof 
+- LSPosed Team for the patch method
