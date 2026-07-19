@@ -25,10 +25,19 @@
 ### 📝 Other Features 
 - Unlock OneUI 8.5 App Layout 
      - Required OneUI 8.5 App Installed
+     - These Following apps have new UI Layout
+          - Gallery
+          - Probably more
 - Unlock OneUI 8.5 Blur UI 
      - Required OneUI 8.5 App Installed
      - Required the device itself supports Live-Blur
-     - Might not works on some version of apps
+     - Tested Blur UI in the following apps
+          - Gallery
+          - Device Care
+          - Digital Wellbeing 
+          - Mode and Routine 
+          - ETC
+
 ### ℹ️ How to use?
 - Install the .APK and activate in LSPosed
 
