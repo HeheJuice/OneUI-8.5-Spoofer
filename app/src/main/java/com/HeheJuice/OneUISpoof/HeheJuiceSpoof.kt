@@ -54,7 +54,7 @@ class HeheJuiceSpoof : IXposedHookLoadPackage {
                 override fun afterHookedMethod(param: MethodHookParam) {
                     val key = param.args[0] as? String ?: return
                     if (key == "ro.build.version.oneui") param.result = "80500" 
-                    if (key == "ro.build.version.sep") param.result = "160500"
+                    if (key == "ro.build.version.sep") param.result = "170500"
                 }
             }
             XposedHelpers.findAndHookMethod(systemPropertiesClass, "get", String::class.java, propHookString)
@@ -64,7 +64,7 @@ class HeheJuiceSpoof : IXposedHookLoadPackage {
                 override fun afterHookedMethod(param: MethodHookParam) {
                     val key = param.args[0] as? String ?: return
                     if (key == "ro.build.version.oneui") param.result = 80500
-                    if (key == "ro.build.version.sep") param.result = 160500
+                    if (key == "ro.build.version.sep") param.result = 170500
                 }
             }
             XposedHelpers.findAndHookMethod(systemPropertiesClass, "getInt", String::class.java, Int::class.javaPrimitiveType, propHookInt)
@@ -99,7 +99,7 @@ class HeheJuiceSpoof : IXposedHookLoadPackage {
                 override fun afterHookedMethod(param: MethodHookParam) {
                     val key = param.args[0] as? String ?: return
                     if (key == "ro.build.version.oneui") param.result = "80500"
-                    if (key == "ro.build.version.sep") param.result = "160500"
+                    if (key == "ro.build.version.sep") param.result = "170500"
                 }
             }
             XposedHelpers.findAndHookMethod(semSystemPropertiesClass, "get", String::class.java, semPropHookString)
@@ -109,7 +109,7 @@ class HeheJuiceSpoof : IXposedHookLoadPackage {
                 override fun afterHookedMethod(param: MethodHookParam) {
                     val key = param.args[0] as? String ?: return
                     if (key == "ro.build.version.oneui") param.result = 80500
-                    if (key == "ro.build.version.sep") param.result = 160500
+                    if (key == "ro.build.version.sep") param.result = 170500
                 }
             }
             XposedHelpers.findAndHookMethod(semSystemPropertiesClass, "getInt", String::class.java, Int::class.javaPrimitiveType, semPropHookInt)
