@@ -8,9 +8,50 @@ import de.robv.android.xposed.XC_MethodHook
 class HeheJuiceSpoof : IXposedHookLoadPackage {
 
     override fun handleLoadPackage(lpparam: LoadPackageParam) {
-        // Run globally across all package frameworks
+        if (lpparam.packageName == null) return
+
+        // ---- LAYER 1: System Properties Spoofing (The Props) ----
         try {
-            // Passing 'null' targets the core system boot classloader instead of app-specific paths
+            val systemPropertiesClass = XposedHelpers.findClass("android.os.SystemProperties", null)
+
+            // Hook String get(String key)
+            XposedHelpers.findAndHookMethod(
+                systemPropertiesClass,
+                "get",
+                String::class.java,
+                object : XC_MethodHook() {
+                    override fun afterHookedMethod(param: MethodHookParam) {
+                        val key = param.args[0] as? String ?: return
+                        if (key == "ro.build.version.oneui") {
+                            param.result = "80500" // Spoofs OneUI 8.5
+                        } else if (key == "ro.build.version.sep") {
+                            param.result = "160500" // Matches corresponding Samsung Extension Platform
+                        }
+                    }
+                }
+            )
+
+            // Hook String get(String key, String def)
+            XposedHelpers.findAndHookMethod(
+                systemPropertiesClass,
+                "get",
+                String::class.java,
+                String::class.java,
+                object : XC_MethodHook() {
+                    override fun afterHookedMethod(param: MethodHookParam) {
+                        val key = param.args[0] as? String ?: return
+                        if (key == "ro.build.version.oneui") {
+                            param.result = "80500"
+                        } else if (key == "ro.build.version.sep") {
+                            param.result = "160500"
+                        }
+                    }
+                }
+            )
+        } catch (t: Throwable) {}
+
+        // ---- LAYER 2: Package Manager Feature Spoofing ----
+        try {
             XposedHelpers.findAndHookMethod(
                 "android.app.ApplicationPackageManager",
                 null, 
@@ -41,8 +82,6 @@ class HeheJuiceSpoof : IXposedHookLoadPackage {
                     }
                 }
             )
-        } catch (t: Throwable) {
-            // Silently absorb mapping exceptions on clean framework hooks
-        }
+        } catch (t: Throwable) {}
     }
 }
