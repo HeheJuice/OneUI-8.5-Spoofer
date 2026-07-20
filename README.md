@@ -11,7 +11,7 @@
 </div>
 
 ### 🗺 Project Overview 
-- OneUI 8.5 Spoofer is a LSPosed Module Apply OneUI 8.5 Spoof For OneUI 7 ~ 8
+- OneUI 8.5 Spoofer is a LSPosed Module that Apply OneUI 8.5 Spoof For OneUI 7 ~ 8
      - Spoof System.prop
      - Spoof OneUI Permission XML
 - LSPosed and Root Required
