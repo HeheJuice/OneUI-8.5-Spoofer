@@ -21,7 +21,7 @@
      - Samsung Camera Crash
      - HomeUP Refused to Launch 
      - Other
-- Why it won't have these problems?
+- Why this patch won't have these problems?
      - It only applies 8.5 Spoof to Selected Apps 
      
 ### 📝 Other Features 
