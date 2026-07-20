@@ -17,10 +17,12 @@
 - LSPosed and Root Required
 
 ### 🤔 Why this patch is made?
-- It's aim is to prevent the following problems because of "Full-System-8.5-Spoofing"
+- It's aim is to prevent the following problems because of "Full-System-8.5-Spoofing" 
      - Samsung Camera Crash
      - HomeUP Refused to Launch 
      - Other
+- Why it won't have these problems?
+     - It only applies 8.5 Spoof to Selected Apps 
      
 ### 📝 Other Features 
 - Unlock OneUI 8.5 App Layout 
